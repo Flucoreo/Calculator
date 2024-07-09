@@ -1,0 +1,24 @@
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+    font-family: Roboto, system-ui, sans-serif;
+}
+
+.heading {
+    display: flex;
+    justify-content: center;
+}
+
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    text-align: center;
+    margin: 2rem 2rem;
+    padding: 1rem 4rem;
+    border-radius: 10rem;
+    /* box-shadow: 0 2px 5px 1px rgba(64, 60, 67, .16); */
+    box-shadow: 1px 3px 6px 2px rgba(64, 60, 67, .16);
+}
