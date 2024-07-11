@@ -100,6 +100,7 @@ let number1HasDot = false; // controls if user can add a decimal number1
 let number2HasDot = false; // controls if user can add a decimal number2
 let number1Negated = false; // keep number1 from being obtaining double negative signs
 let number2Negated = false; // keep number2 from being obtaining double negative signs
+let hasPi = false; // prevent adding multiple 3.14s thus stacking decimals
 
 // function update numbers correctly as user types them
 function checkUserActionsNumber(button){
@@ -152,7 +153,8 @@ function checkUserActionsOperator(button){
                 typingSecondNumber = true;
                 typingFirstNumber = false;
                 operatorExists = true;
-                operator = `${button}`;   
+                operator = `${button}`;
+                hasPi = false;
             }
             
             // update the display and log info
@@ -308,7 +310,10 @@ buttonsContainer.addEventListener('click', (e) => {
     } else if (target.classList.contains("divide")){
         checkUserActionsOperator('/');
     } else if (target.classList.contains("pi")){
-        checkUserActionsNumber('3.14');
+        if (hasPi == false) {
+            checkUserActionsNumber('3.14');
+        }
+        hasPi = true;
     } else if (target.classList.contains("negate")){
         negateNumber();
     } else if (target.classList.contains("modulo")){
