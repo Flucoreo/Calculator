@@ -244,6 +244,35 @@ function negateNumber(){
     }
 }
 
+// function to get the percentage (out of 100) of the current number being typed when the % button is clicked
+function getPercentage(){
+    if (typingFirstNumber || (typingSecondNumber == false && number1 != null)){
+        length = number1.length;
+        number1 = (Number(number1) / 100).toFixed(4);
+
+        for (let i = 0; i < length; i++){
+            displayText = displayText.slice(0, -1);;
+        }
+        displayText += number1;
+
+       // update display and log data
+       updateDisplay();
+       logData();
+    } else if (typingSecondNumber){
+        length = number2.length;
+        number2 = (Number(number2) / 100).toFixed(4);
+
+        for (let i = 0; i < length; i++){
+            displayText = displayText.slice(0, -1);;
+        }
+        displayText += number2;
+
+       // update display and log data
+       updateDisplay();
+       logData();
+    }
+}
+
 // capture the user's actions as they click buttons
 const buttonsContainer = document.querySelector('.buttons-container');
 
@@ -283,7 +312,7 @@ buttonsContainer.addEventListener('click', (e) => {
     } else if (target.classList.contains("negate")){
         negateNumber();
     } else if (target.classList.contains("modulo")){
-        // updateDisplay();
+        getPercentage();
     } else if (target.classList.contains("dot")){
         decimalCheck();
     } else if (target.classList.contains("clear")){
