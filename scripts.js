@@ -57,7 +57,7 @@ function solve(a, b, op){
         return(':(')
     }
 
-    return solution;
+    return Number((solution).toFixed(4));
 }
 
 // number and operation variables
@@ -95,6 +95,8 @@ let typingSecondNumber = false;
 let typingOperater = false;
 let operatorExists = false;
 let hitEqual = true;
+let number1HasDot = false;
+let number2HasDot = false;
 
 function checkUserActionsNumber(button){
     if (typingSecondNumber == true){
@@ -108,6 +110,7 @@ function checkUserActionsNumber(button){
         }
     } else {
         typingFirstNumber = true;
+
         if (number1 == null){
             number1 = `${button}`;
         } else {
@@ -136,7 +139,6 @@ function checkUserActionsOperator(button){
                 typingFirstNumber = false;
                 operatorExists = true;
                 operator = `${button}`;
-    
                 console.log(`operator: ${operator}`);
             }
             
@@ -201,8 +203,18 @@ buttonsContainer.addEventListener('click', (e) => {
         updateDisplay();
         logData();
     } else if (target.classList.contains("dot")){
-        // displayText += '.';
-        // updateDisplay();
+        // making sure the user can't type multiple decimals in 1 number
+        if (typingFirstNumber){
+            if (!number1HasDot){
+                checkUserActionsNumber('.')
+                number1HasDot = true;
+            }
+        } else if (typingSecondNumber){
+            if (!number2HasDot){
+                checkUserActionsNumber('.')
+                number2HasDot = true;
+            }
+        }
     } else if (target.classList.contains("equal")){
         // reset everything back to normal, and set number1 = to their previous solution incase they want to operate on it
         if (hitEqual == false){
@@ -218,6 +230,12 @@ buttonsContainer.addEventListener('click', (e) => {
             number1 = displayText;
             logData();
             updateDisplay();
+
+            // code for multiple decimal prevention
+            number2HasDot = false;
+            if (Number.isInteger(number1)){
+                number1HasDot = false;
+            }
         }
     } 
 });
