@@ -58,7 +58,7 @@ function solve(a, b, op){
         return(':(')
     }
 
-    return Number((solution).toFixed(4));
+    return solution.toFixed(4);
 }
 
 // instances for the buttons
@@ -98,6 +98,8 @@ let operatorExists = false; // a way to know if an operator is in the equation
 let allowedToHitEqual = false; // controls if user can hit equal
 let number1HasDot = false; // controls if user can add a decimal number1
 let number2HasDot = false; // controls if user can add a decimal number2
+let number1Negated = false; // keep number1 from being obtaining double negative signs
+let number2Negated = false; // keep number2 from being obtaining double negative signs
 
 // function update numbers correctly as user types them
 function checkUserActionsNumber(button){
@@ -161,6 +163,87 @@ function checkUserActionsOperator(button){
     }
 }
 
+// function to make sure the user can't type multiple decimals in 1 number
+function decimalCheck(){
+    if (typingFirstNumber){
+        if (!number1HasDot){
+            checkUserActionsNumber('.')
+            number1HasDot = true;
+        }
+    } else if (typingSecondNumber){
+        if (!number2HasDot){
+            checkUserActionsNumber('.')
+            number2HasDot = true;
+        }
+    }
+}
+
+// function to change a number from negative to positive or vise-versa
+// fix ability to create negative zero
+function negateNumber(){
+    if (typingSecondNumber && number2 != null){
+        if (number2Negated === false){
+            let number2Arr = number2.split('');
+            number2Arr.unshift('-');
+            number2 = number2Arr.join('');
+
+            let displayTextArr = displayText.split('')
+            displayTextArr[displayText.length - (number2.length)] = '-';
+            displayText = displayTextArr.join('')
+
+            number2Negated = true;
+
+            // update display and log data
+            updateDisplay();
+            logData();
+        } else if (number2Negated === true) {
+            let number2Arr = number2.split('');
+            number2Arr.shift();
+            number2 = number2Arr.join('');
+
+            let displayTextArr = displayText.split('')
+            displayTextArr[displayText.length - (number2.length+1)] = ' ';
+            displayText = displayTextArr.join('')
+
+            number2Negated = false;
+
+            // update display and log data
+            updateDisplay();
+            logData();
+        }
+    } else if (typingSecondNumber == false && number1 != null){ // if the second number isnt being typed, then the user must want to negate the first one
+        if (number1Negated === false){
+            let number1Arr = number1.split('');
+            number1Arr.unshift('-');
+            number1 = number1Arr.join('');
+
+            let displayTextArr = displayText.split('')
+            displayTextArr.unshift('-')
+            displayText = displayTextArr.join('')
+
+            number1Negated = true;
+
+            // update display and log data
+            updateDisplay();
+            logData();
+        } else if (number1Negated === true) {
+            let number1Arr = number1.split('');
+            number1Arr.shift();
+            number1 = number1Arr.join('');
+
+            let displayTextArr = displayText.split('')
+            displayTextArr.shift()
+            displayText = displayTextArr.join('')
+
+            number1Negated = false;
+
+            // update display and log data
+            updateDisplay();
+            logData();
+        }
+    }
+}
+
 // capture the user's actions as they click buttons
 const buttonsContainer = document.querySelector('.buttons-container');
 
@@ -198,9 +281,11 @@ buttonsContainer.addEventListener('click', (e) => {
     } else if (target.classList.contains("pi")){
         checkUserActionsNumber('3.14');
     } else if (target.classList.contains("negate")){
-        // updateDisplay();
+        negateNumber();
     } else if (target.classList.contains("modulo")){
         // updateDisplay();
+    } else if (target.classList.contains("dot")){
+        decimalCheck();
     } else if (target.classList.contains("clear")){
         // reset everything to orriginal values
         typingFirstNumber = false;
@@ -210,24 +295,13 @@ buttonsContainer.addEventListener('click', (e) => {
         operator = '';
         number1 = null;
         number2 = null;
+        number1Negated = false;
+        number2Negated = false;
 
         // update the display and log info
         displayText = '';
         updateDisplay();
         logData();
-    } else if (target.classList.contains("dot")){
-        // making sure the user can't type multiple decimals in 1 number
-        if (typingFirstNumber){
-            if (!number1HasDot){
-                checkUserActionsNumber('.')
-                number1HasDot = true;
-            }
-        } else if (typingSecondNumber){
-            if (!number2HasDot){
-                checkUserActionsNumber('.')
-                number2HasDot = true;
-            }
-        }
     } else if (target.classList.contains("equal")){    
         if (allowedToHitEqual == true){
             // doslve the equation
@@ -241,17 +315,25 @@ buttonsContainer.addEventListener('click', (e) => {
             typingSecondNumber = false;
             typingOperater = false;
             operatorExists = false;
-            number1 = displayText;
-            
-            // update display and log info
-            updateDisplay();
-            logData();
+            number1 = `${displayText}`;
+
+            // code for correcting number negations when hitting equal
+            number2Negated = false;
+            if (number1.at(0) == '-'){
+                number1Negated = true;
+            } else {
+                number1Negated = false;
+            }
 
             // code for multiple decimal prevention
             number2HasDot = false; // after equal is hit, here is no number2. so it for sure doesn't have a decimal
             if (Number.isInteger(number1)){ // after equal is hit, the result might have a decimal, but if not, update its status to not having one
                 number1HasDot = false;
             }
+
+            // update display and log info
+            updateDisplay();
+            logData();
         }
     } 
 });
